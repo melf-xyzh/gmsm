@@ -3,7 +3,7 @@
 
 ### 说明
 
-本库为https://github.com/tjfoc/gmsm库的二次封装，在此处向前辈致敬！
+本库为https://github.com/tjfoc/gmsm 库的二次封装，在此处向前辈致敬！
 
 ### 安装
 
@@ -13,7 +13,7 @@ go get github.com/melf-xyzh/gmsm
 
 ### 使用方法
 
-随机生成sm2公私钥
+##### 随机生成sm2公私钥
 
 ```go
 privateKey, publicKey, err := sm2.CreateSM2Key()
@@ -22,7 +22,7 @@ if err != nil {
 }
 ```
 
-生成读取公私钥文件（pem格式）
+##### 生成读取公私钥文件（pem格式）
 
 ```go
 // 生成私钥文件（pem格式）
@@ -47,7 +47,7 @@ if err != nil {
 }
 ```
 
-生成读取公私钥文件（cer格式）
+##### 生成读取公私钥文件（cer格式）
 
 ```go
 // 生成私钥文件（cer格式）
@@ -72,7 +72,7 @@ if err != nil {
 }
 ```
 
-sm2加密解密
+##### sm2加密解密
 
 ```go
 data := "Hello,World!"
@@ -100,7 +100,7 @@ if err != nil {
 fmt.Println("解密结果：" + data)
 ```
 
-sm2签名验签
+##### sm2签名验签
 
 ```go
 // sm2签名
@@ -118,7 +118,7 @@ if ok {
 }
 ```
 
-sm3算法
+##### sm3算法
 
 ```go
 // sm3
@@ -126,7 +126,7 @@ hashData := sm3.Hash(data)
 fmt.Println("sm3签名：" + hashData)
 ```
 
-sm4银联Mac摘要算法
+##### sm4银联Mac摘要算法
 
 ```go
 abstract, err := sm4.SecretText("663578966666", []byte("1234567890abcdef"))
