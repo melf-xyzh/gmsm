@@ -13,7 +13,7 @@ go get github.com/melf-xyzh/gmsm
 
 ### 使用方法
 
-##### 随机生成sm2公私钥
+#### 随机生成sm2公私钥
 
 ```go
 privateKey, publicKey, err := sm2.CreateSM2Key()
@@ -22,7 +22,7 @@ if err != nil {
 }
 ```
 
-##### 生成读取公私钥文件（pem格式）
+#### 生成读取公私钥文件（pem格式）
 
 ```go
 // 生成私钥文件（pem格式）
@@ -47,7 +47,7 @@ if err != nil {
 }
 ```
 
-##### 生成读取公私钥文件（cer格式）
+#### 生成读取公私钥文件（cer格式）
 
 ```go
 // 生成私钥文件（cer格式）
@@ -70,6 +70,7 @@ publicKey, err = sm2.ReadPublicCer("cert/publicKey.cer")
 if err != nil {
 	log.Fatal(err)
 }
+
 // 读取私钥字符串（cer格式）
 privateKey, err = sm2.ReadPrivateCerStr(privateKeyStr)
 if err != nil {
@@ -113,18 +114,49 @@ fmt.Println("解密结果：" + data)
 ##### sm2签名验签
 
 ```go
-// sm2签名
+// sm2签名（软加密签名）
 sign, err := sm2.Sign(privateKey, data, crypto.BLAKE2b_256)
 if err != nil {
-	log.Fatal(err)
+    log.Fatal(err)
 }
 fmt.Println("签名结果：" + sign)
-// sm2验签
+// sm2验签（软加密验签）
 ok := sm2.Verify(publicKey, data, sign)
 if ok {
-	fmt.Println("验签成功")
+    fmt.Println("验签成功")
 } else {
-	fmt.Println("验签失败")
+    fmt.Println("验签失败")
+}
+
+// sm2签名（加密机签名）
+sign, err = sm2.EncryptorSign(privateKey, data)
+if err != nil {
+    log.Fatal(err)
+}
+fmt.Println("签名结果：" + sign)
+
+// sm2验签（加密机验签）
+ok = sm2.EncryptorVerify(publicKey, data, sign)
+if ok {
+    fmt.Println("验签成功")
+} else {
+    fmt.Println("验签失败")
+}
+
+// sm2签名（硬件加密）
+signR, signS, err := sm2.HardwareSign(privateKey, data)
+if err != nil {
+    log.Fatal(err)
+}
+fmt.Println("签名R：" + signR)
+fmt.Println("签名S：" + signS)
+
+// sm2验签（硬件验签）
+ok = sm2.HardwareVerify(publicKey, data, signR, signS)
+if ok {
+    fmt.Println("验签成功")
+} else {
+    fmt.Println("验签失败")
 }
 ```
 

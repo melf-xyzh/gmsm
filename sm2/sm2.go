@@ -1,6 +1,7 @@
 package sm2
 
 import (
+	"bytes"
 	"crypto"
 	"crypto/rand"
 	"encoding/hex"
@@ -9,6 +10,7 @@ import (
 	"github.com/tjfoc/gmsm/x509"
 	"io/ioutil"
 	"log"
+	"math/big"
 	"os"
 	"path/filepath"
 	"unsafe"
@@ -437,5 +439,99 @@ func Verify(publicKey *sm2.PublicKey, msg, sign string) (verify bool) {
 	signBytes, _ := hex.DecodeString(sign)
 	// sm2验签
 	verify = publicKey.Verify(msgBytes, signBytes)
+	return
+}
+
+var (
+	defaultUid = []byte{0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38}
+)
+
+// HardwareSign
+/**
+ *  @Description: 硬加密签名
+ *  @param privateKey 私钥
+ *  @param msg 待签名内容
+ *  @return signR 签名R
+ *  @return signS 签名S
+ *  @return err
+ */
+func HardwareSign(privateKey *sm2.PrivateKey, msg string) (signR, signS string, err error) {
+	var r, s *big.Int
+	r, s, err = sm2.Sm2Sign(privateKey, []byte(msg), defaultUid, rand.Reader)
+	if err != nil {
+		return
+	}
+	signR = hex.EncodeToString(r.Bytes())
+	signS = hex.EncodeToString(s.Bytes())
+	return
+}
+
+// HardwareVerify
+/**
+ *  @Description:硬加密验签
+ *  @param publicKey 公钥
+ *  @param msg 待签名内容
+ *  @param signR 签名R
+ *  @param signS 签名S
+ *  @return ok
+ */
+func HardwareVerify(publicKey *sm2.PublicKey, msg, signR, signS string) (ok bool) {
+	signRByte, err := hex.DecodeString(signR)
+	if err != nil {
+		return false
+	}
+	signSByte, err := hex.DecodeString(signS)
+	if err != nil {
+		return false
+	}
+	var r, s *big.Int
+	r = new(big.Int).SetBytes(signRByte)
+	s = new(big.Int).SetBytes(signSByte)
+	ok = sm2.Sm2Verify(publicKey, []byte(msg), defaultUid, r, s)
+	return
+}
+
+// EncryptorSign
+/**
+ *  @Description: 加密机签名
+	https://www.cnblogs.com/yang37/p/15870304.html
+	https://blog.csdn.net/weixin_42170064/article/details/114430793
+ *  @param privateKey 私钥
+ *  @param msg 待签名内容
+ *  @return signature 签名结果
+ *  @return err 错误
+*/
+func EncryptorSign(privateKey *sm2.PrivateKey, msg string) (signature string, err error) {
+	var r, s *big.Int
+	r, s, err = sm2.Sm2Sign(privateKey, []byte(msg), defaultUid, rand.Reader)
+	if err != nil {
+		return
+	}
+	var buffer bytes.Buffer
+	buffer.Write(r.Bytes())
+	buffer.Write(s.Bytes())
+	signature = hex.EncodeToString(buffer.Bytes())
+	return
+}
+
+// EncryptorVerify
+/**
+ *  @Description: 加密机验签
+ *  @param publicKey 公钥
+ *  @param signature 签名内容
+ *  @return ok 是否验签合格
+ */
+func EncryptorVerify(publicKey *sm2.PublicKey, msg ,signature string) (ok bool) {
+	signByte, err := hex.DecodeString(signature)
+	if err != nil {
+		return false
+	}
+	l := len(signByte)
+	br := signByte[:l/2]
+	bs := signByte[l/2:]
+	var ri, si big.Int
+	r := ri.SetBytes(br)
+	s := si.SetBytes(bs)
+	ok = sm2.Sm2Verify(publicKey, []byte(msg), defaultUid, r, s)
 	return
 }
