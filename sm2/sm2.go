@@ -16,10 +16,10 @@ import (
 
 // CreateSM2Key
 /**
- * @Description: 随机生成公私钥
- * @return privateKey 私钥
- * @return publicKey 公钥
- * @return err
+ *  @Description: 随机生成公私钥
+ *  @return privateKey 私钥
+ *  @return publicKey 公钥
+ *  @return err
  */
 func CreateSM2Key() (privateKey *sm2.PrivateKey, publicKey *sm2.PublicKey, err error) {
 	// 生成sm2秘钥对
@@ -27,7 +27,6 @@ func CreateSM2Key() (privateKey *sm2.PrivateKey, publicKey *sm2.PublicKey, err e
 	if err != nil {
 		return
 	}
-
 	// 进行sm2公钥断言
 	publicKey = privateKey.Public().(*sm2.PublicKey)
 	return
@@ -35,11 +34,11 @@ func CreateSM2Key() (privateKey *sm2.PrivateKey, publicKey *sm2.PublicKey, err e
 
 // CreatePrivatePem
 /**
- * @Description: 创建Pem私钥文件
- * @param privateKey 私钥
- * @param pwd 密码
- * @param path Pem私钥文件保存路径
- * @return err
+ *  @Description: 创建Pem私钥文件
+ *  @param privateKey 私钥
+ *  @param pwd 密码
+ *  @param path Pem私钥文件保存路径
+ *  @return err
  */
 func CreatePrivatePem(privateKey *sm2.PrivateKey, pwd []byte, path string) (err error) {
 	// 将私钥反序列化并进行pem编码
@@ -73,10 +72,10 @@ func CreatePrivatePem(privateKey *sm2.PrivateKey, pwd []byte, path string) (err 
 
 // CreatePrivateCer
 /**
- * @Description: 创建Cer私钥文件
- * @param privateKey 私钥
- * @param path Cer私钥文件保存路径
- * @return err
+ *  @Description: 创建Cer私钥文件
+ *  @param privateKey 私钥
+ *  @param path Cer私钥文件保存路径
+ *  @return err
  */
 func CreatePrivateCer(privateKey *sm2.PrivateKey, path string) (err error) {
 	privateKeyStr := x509.WritePrivateKeyToHex(privateKey)
@@ -105,10 +104,10 @@ func CreatePrivateCer(privateKey *sm2.PrivateKey, path string) (err error) {
 
 // CreatePublicPem
 /**
- * @Description: 创建Pem公钥文件
- * @param publicKey 公钥
- * @param path Pem公钥文件保存路径
- * @return err
+ *  @Description: 创建Pem公钥文件
+ *  @param publicKey 公钥
+ *  @param path Pem公钥文件保存路径
+ *  @return err
  */
 func CreatePublicPem(publicKey *sm2.PublicKey, path string) (err error) {
 	// 将私钥反序列化并进行pem编码
@@ -142,10 +141,10 @@ func CreatePublicPem(publicKey *sm2.PublicKey, path string) (err error) {
 
 // CreatePublicCer
 /**
- * @Description: 创建Cer公钥文件
- * @param publicKey 公钥
- * @param path Cer公钥文件保存路径
- * @return err
+ *  @Description: 创建Cer公钥文件
+ *  @param publicKey 公钥
+ *  @param path Cer公钥文件保存路径
+ *  @return err
  */
 func CreatePublicCer(publicKey *sm2.PublicKey, path string) (err error) {
 	publicKeyStr := x509.WritePublicKeyToHex(publicKey)
@@ -174,11 +173,11 @@ func CreatePublicCer(publicKey *sm2.PublicKey, path string) (err error) {
 
 // ReadPrivatePem
 /**
- * @Description: 读取Pem私钥文件
- * @param path Pem私钥文件路径
- * @param pwd 密码
- * @return privateKey 私钥
- * @return err
+ *  @Description: 读取Pem私钥文件
+ *  @param path Pem私钥文件路径
+ *  @param pwd 密码
+ *  @return privateKey 私钥
+ *  @return err
  */
 func ReadPrivatePem(path string, pwd []byte) (privateKey *sm2.PrivateKey, err error) {
 	// 打开文件读取私钥
@@ -208,10 +207,10 @@ func ReadPrivatePem(path string, pwd []byte) (privateKey *sm2.PrivateKey, err er
 
 // ReadPublicPem
 /**
- * @Description: 读取Pem公钥文件
- * @param path Pem公钥文件路径
- * @return publicKey 公钥
- * @return err
+ *  @Description: 读取Pem公钥文件
+ *  @param path Pem公钥文件路径
+ *  @return publicKey 公钥
+ *  @return err
  */
 func ReadPublicPem(path string) (publicKey *sm2.PublicKey, err error) {
 	// 打开文件读取私钥
@@ -241,16 +240,16 @@ func ReadPublicPem(path string) (publicKey *sm2.PublicKey, err error) {
 
 // ReadPrivateCer
 /**
- * @Description: 读取Cer私钥文件
- * @param path Cer私钥文件路径
- * @return privateKey 私钥
- * @return err
+ *  @Description: 读取Cer私钥文件
+ *  @param path Cer私钥文件路径
+ *  @return privateKey 私钥
+ *  @return err
  */
 func ReadPrivateCer(path string) (privateKey *sm2.PrivateKey, err error) {
 	var file *os.File
 	file, err = os.OpenFile(path, os.O_RDONLY, 0)
 	if err != nil {
-		panic(err)
+		return
 	}
 	defer file.Close()
 	content := make([]byte, 0)
@@ -259,18 +258,30 @@ func ReadPrivateCer(path string) (privateKey *sm2.PrivateKey, err error) {
 	return
 }
 
+// ReadPrivateCerStr
+/**
+ *  @Description: 利用私钥字符串生成私钥
+ *  @param privateStr 私钥字符串
+ *  @return privateKey 私钥
+ *  @return err
+ */
+func ReadPrivateCerStr(privateStr string) (privateKey *sm2.PrivateKey, err error) {
+	privateKey, err = x509.ReadPrivateKeyFromHex(string(privateStr))
+	return
+}
+
 // ReadPublicCer
 /**
- * @Description: 读取Cer公钥文件
- * @param path Cer公钥文件路径
- * @return publicKey 公钥
- * @return err
+ *  @Description: 读取Cer公钥文件
+ *  @param path Cer公钥文件路径
+ *  @return publicKey 公钥
+ *  @return err
  */
 func ReadPublicCer(path string) (publicKey *sm2.PublicKey, err error) {
 	var file *os.File
 	file, err = os.OpenFile(path, os.O_RDONLY, 0)
 	if err != nil {
-		panic(err)
+		return
 	}
 	defer file.Close()
 	content := make([]byte, 0)
@@ -279,12 +290,24 @@ func ReadPublicCer(path string) (publicKey *sm2.PublicKey, err error) {
 	return
 }
 
+// ReadPublicCerStr
+/**
+ *  @Description: 利用公钥字符串生成私钥
+ *  @param publicStr 公钥字符串
+ *  @return publicKey 公钥
+ *  @return err
+ */
+func ReadPublicCerStr(publicStr string) (publicKey *sm2.PublicKey, err error) {
+	publicKey, err = x509.ReadPublicKeyFromHex(publicStr)
+	return
+}
+
 // Encrypt
 /**
- * @Description: SM2加密(公钥加密)
- * @param publicKey 公钥
- * @param data 需要加密的数据
- * @return cipherStr 加密后的字符串
+ *  @Description: SM2加密(公钥加密)
+ *  @param publicKey 公钥
+ *  @param data 需要加密的数据
+ *  @return cipherStr 加密后的字符串
  */
 func Encrypt(publicKey *sm2.PublicKey, data string) (cipherStr string) {
 	// 将字符串转为[]byte
@@ -302,11 +325,11 @@ func Encrypt(publicKey *sm2.PublicKey, data string) (cipherStr string) {
 
 // EncryptForJava
 /**
- * @Description: SM2加密(公钥加密)(适配Java版)
- * @param publicKey 公钥
- * @param data 需要加密的数据
- * @return cipherTxt 加密后的字符串
- * @return err
+ *  @Description: SM2加密(公钥加密)(适配Java版)
+ *  @param publicKey 公钥
+ *  @param data 需要加密的数据
+ *  @return cipherTxt 加密后的字符串
+ *  @return err
  */
 func EncryptForJava(publicKey *sm2.PublicKey, data string) (cipherTxt string, err error) {
 	// 将数据转为[]byte
@@ -326,11 +349,11 @@ func EncryptForJava(publicKey *sm2.PublicKey, data string) (cipherTxt string, er
 
 // Decode
 /**
- * @Description: 解密(私钥解密)
- * @param privateKey 私钥
- * @param cipherStr 加密后的字符串
- * @return data 解密后的数据
- * @return err
+ *  @Description: 解密(私钥解密)
+ *  @param privateKey 私钥
+ *  @param cipherStr 加密后的字符串
+ *  @return data 解密后的数据
+ *  @return err
  */
 func Decode(privateKey *sm2.PrivateKey, cipherStr string) (data string, err error) {
 	// 16进制字符串转[]byte
@@ -348,11 +371,11 @@ func Decode(privateKey *sm2.PrivateKey, cipherStr string) (data string, err erro
 
 // DecryptForJava
 /**
- * @Description: 解密(私钥解密)(适配Java版)
- * @param privateKey 私钥
- * @param cipherStr 加密后的字符串
- * @return data 解密后的数据
- * @return err
+ *  @Description: 解密(私钥解密)(适配Java版)
+ *  @param privateKey 私钥
+ *  @param cipherStr 加密后的字符串
+ *  @return data 解密后的数据
+ *  @return err
  */
 func DecryptForJava(privateKey *sm2.PrivateKey, cipherStr string) (data string, err error) {
 	// 此做法为了与java兼容
@@ -377,12 +400,12 @@ func DecryptForJava(privateKey *sm2.PrivateKey, cipherStr string) (data string, 
 
 // Sign
 /**
- * @Description: 签名
- * @param privateKey 私钥
- * @param msg 需要签名的内容
- * @param signer
- * @return sign 签名字符串
- * @return err
+ *  @Description: 签名
+ *  @param privateKey 私钥
+ *  @param msg 需要签名的内容
+ *  @param signer
+ *  @return sign 签名字符串
+ *  @return err
  */
 func Sign(privateKey *sm2.PrivateKey, msg string, signer crypto.SignerOpts) (sign string, err error) {
 	if signer == nil {
@@ -402,11 +425,11 @@ func Sign(privateKey *sm2.PrivateKey, msg string, signer crypto.SignerOpts) (sig
 
 // Verify
 /**
- * @Description: 验签
- * @param publicKey 公钥
- * @param msg 需要验签的内容
- * @param sign 签名字符串
- * @return verify
+ *  @Description: 验签
+ *  @param publicKey 公钥
+ *  @param msg 需要验签的内容
+ *  @param sign 签名字符串
+ *  @return verify
  */
 func Verify(publicKey *sm2.PublicKey, msg, sign string) (verify bool) {
 	// 16进制字符串转[]byte

@@ -70,6 +70,16 @@ publicKey, err = sm2.ReadPublicCer("cert/publicKey.cer")
 if err != nil {
 	log.Fatal(err)
 }
+// 读取私钥字符串（cer格式）
+privateKey, err = sm2.ReadPrivateCerStr(privateKeyStr)
+if err != nil {
+	log.Fatal(err)
+}
+// 读取公钥字符串（cer格式）
+publicKey, err = sm2.ReadPublicCerStr(publicKeyStr)
+if err != nil {
+	log.Fatal(err)
+}
 ```
 
 ##### sm2加密解密
