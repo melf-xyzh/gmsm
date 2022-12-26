@@ -268,7 +268,18 @@ func ReadPrivateCer(path string) (privateKey *sm2.PrivateKey, err error) {
  *  @return err
  */
 func ReadPrivateCerStr(privateStr string) (privateKey *sm2.PrivateKey, err error) {
-	privateKey, err = x509.ReadPrivateKeyFromHex(string(privateStr))
+	privateKey, err = x509.ReadPrivateKeyFromHex(privateStr)
+	return
+}
+
+// WritePrivateCerStr
+/**
+ *  @Description: 将私钥保存为字符串
+ *  @param privateKey
+ *  @return privateStr
+ */
+func WritePrivateCerStr(privateKey *sm2.PrivateKey) (privateStr string) {
+	privateStr = x509.WritePrivateKeyToHex(privateKey)
 	return
 }
 
@@ -301,6 +312,17 @@ func ReadPublicCer(path string) (publicKey *sm2.PublicKey, err error) {
  */
 func ReadPublicCerStr(publicStr string) (publicKey *sm2.PublicKey, err error) {
 	publicKey, err = x509.ReadPublicKeyFromHex(publicStr)
+	return
+}
+
+// WritePublicCerStr
+/**
+ *  @Description: 将公钥保存为字符串
+ *  @param publicKey
+ *  @return publicStr
+ */
+func WritePublicCerStr(publicKey *sm2.PublicKey) (publicStr string) {
+	publicStr = x509.WritePublicKeyToHex(publicKey)
 	return
 }
 
@@ -521,7 +543,7 @@ func EncryptorSign(privateKey *sm2.PrivateKey, msg string) (signature string, er
  *  @param signature 签名内容
  *  @return ok 是否验签合格
  */
-func EncryptorVerify(publicKey *sm2.PublicKey, msg ,signature string) (ok bool) {
+func EncryptorVerify(publicKey *sm2.PublicKey, msg, signature string) (ok bool) {
 	signByte, err := hex.DecodeString(signature)
 	if err != nil {
 		return false
