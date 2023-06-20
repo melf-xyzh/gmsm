@@ -168,6 +168,27 @@ hashData := sm3.Hash(data)
 fmt.Println("sm3签名：" + hashData)
 ```
 
+##### sm4加密解密
+
+```go
+data := []byte("Hello World")
+key := []byte("123456789abcdefg")
+mode := smconstant.CBC
+//mode := smconstant.ECB
+//mode := smconstant.OFB
+// mode := smconstant.CFB
+encrypt, err := sm4.Encrypt(data, key, mode)
+if err != nil {
+    return
+}
+fmt.Println(hex.EncodeToString(encrypt))
+bytes, err := sm4.Decrypt(encrypt, key, mode)
+if err != nil {
+    return
+}
+fmt.Println(string(bytes))
+```
+
 ##### sm4银联Mac摘要算法
 
 ```go

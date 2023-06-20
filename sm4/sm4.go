@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
+	smconstant "github.com/melf-xyzh/gmsm/constant"
 	"github.com/tjfoc/gmsm/sm4"
 )
 
@@ -109,5 +110,55 @@ func ReadPwdFromFile(path string, pwd []byte) (key []byte, err error) {
  */
 func WritePwdToFile(path string, key, pwd []byte) (err error) {
 	err = sm4.WriteKeyToPemFile(path, key, pwd)
+	return
+}
+
+// Encrypt
+/**
+ *  @Description: SM4加密
+ *  @param data
+ *  @param key
+ *  @param mode
+ *  @return out
+ *  @return err
+ */
+func Encrypt(data, key []byte, mode smconstant.EncryptMode) (out []byte, err error) {
+	switch mode {
+	case smconstant.CBC:
+		out, err = sm4.Sm4Cbc(key, data, true)
+	case smconstant.ECB:
+		out, err = sm4.Sm4Ecb(key, data, true)
+	case smconstant.OFB:
+		out, err = sm4.Sm4OFB(key, data, true)
+	case smconstant.CFB:
+		out, err = sm4.Sm4CFB(key, data, true)
+	default:
+		err = errors.New("the mode is not supported")
+	}
+	return
+}
+
+// Decrypt
+/**
+ *  @Description: SM4解密
+ *  @param data
+ *  @param key
+ *  @param mode
+ *  @return out
+ *  @return err
+ */
+func Decrypt(data, key []byte, mode smconstant.EncryptMode) (out []byte, err error) {
+	switch mode {
+	case smconstant.CBC:
+		out, err = sm4.Sm4Cbc(key, data, false)
+	case smconstant.ECB:
+		out, err = sm4.Sm4Ecb(key, data, false)
+	case smconstant.OFB:
+		out, err = sm4.Sm4OFB(key, data, false)
+	case smconstant.CFB:
+		out, err = sm4.Sm4CFB(key, data, false)
+	default:
+		err = errors.New("the mode is not supported")
+	}
 	return
 }

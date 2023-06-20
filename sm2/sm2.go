@@ -326,14 +326,14 @@ func WritePublicCerStr(publicKey *sm2.PublicKey) (publicStr string) {
 	return
 }
 
-// Encrypt
+// EncryptAsn1
 /**
- *  @Description: SM2加密(公钥加密)
+ *  @Description: SM2加密(ASN1编码)(公钥加密)
  *  @param publicKey 公钥
  *  @param data 需要加密的数据
  *  @return cipherStr 加密后的字符串
  */
-func Encrypt(publicKey *sm2.PublicKey, data string) (cipherStr string) {
+func EncryptAsn1(publicKey *sm2.PublicKey, data string) (cipherStr string) {
 	// 将字符串转为[]byte
 	dataByte := []byte(data)
 	// sm2加密
@@ -352,15 +352,16 @@ func Encrypt(publicKey *sm2.PublicKey, data string) (cipherStr string) {
  *  @Description: SM2加密(公钥加密)(适配Java版)
  *  @param publicKey 公钥
  *  @param data 需要加密的数据
+ *  @param mode sm2.C1C3C2 / sm2.C1C2C3
  *  @return cipherTxt 加密后的字符串
  *  @return err
  */
-func EncryptForJava(publicKey *sm2.PublicKey, data string) (cipherTxt string, err error) {
+func EncryptForJava(publicKey *sm2.PublicKey, data string, mode int) (cipherTxt string, err error) {
 	// 将数据转为[]byte
 	dataByte := []byte(data)
 	// sm2加密
 	cipher := make([]byte, 0)
-	cipher, err = sm2.Encrypt(publicKey, dataByte, nil, sm2.C1C3C2)
+	cipher, err = sm2.Encrypt(publicKey, dataByte, nil, mode)
 	if err != nil {
 		return "", err
 	}
@@ -371,15 +372,15 @@ func EncryptForJava(publicKey *sm2.PublicKey, data string) (cipherTxt string, er
 	return
 }
 
-// Decode
+// DecryptAsn1
 /**
- *  @Description: 解密(私钥解密)
+ *  @Description: SM2解密(ASN1编码)(私钥解密)
  *  @param privateKey 私钥
  *  @param cipherStr 加密后的字符串
  *  @return data 解密后的数据
  *  @return err
  */
-func Decode(privateKey *sm2.PrivateKey, cipherStr string) (data string, err error) {
+func DecryptAsn1(privateKey *sm2.PrivateKey, cipherStr string) (data string, err error) {
 	// 16进制字符串转[]byte
 	bytes, _ := hex.DecodeString(cipherStr)
 	// sm2解密
@@ -398,10 +399,11 @@ func Decode(privateKey *sm2.PrivateKey, cipherStr string) (data string, err erro
  *  @Description: 解密(私钥解密)(适配Java版)
  *  @param privateKey 私钥
  *  @param cipherStr 加密后的字符串
+ *  @param mode sm2.C1C3C2 / sm2.C1C2C3
  *  @return data 解密后的数据
  *  @return err
  */
-func DecryptForJava(privateKey *sm2.PrivateKey, cipherStr string) (data string, err error) {
+func DecryptForJava(privateKey *sm2.PrivateKey, cipherStr string, mode int) (data string, err error) {
 	// 此做法为了与java兼容
 	// https://www.cnblogs.com/lylhqy/p/15693757.html
 	cipherStr = "04" + cipherStr
@@ -413,7 +415,7 @@ func DecryptForJava(privateKey *sm2.PrivateKey, cipherStr string) (data string, 
 	}
 	// sm2解密
 	dataByte := make([]byte, 0)
-	dataByte, err = sm2.Decrypt(privateKey, txtByte, sm2.C1C3C2)
+	dataByte, err = sm2.Decrypt(privateKey, txtByte, mode)
 	if err != nil {
 		return
 	}
